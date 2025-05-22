@@ -41,7 +41,7 @@ export const deposit = async (req, res) => {
         receiver: user._id,
         amount: gemsEarned,
         currency: 'GEMS',
-        type: 'bonus',
+        type: 'bonus-gems', // ✅ Fixed here
         metadata: { reason: 'Deposit Reward' }
       });
     }
@@ -81,7 +81,7 @@ export const withdraw = async (req, res) => {
       metadata: { method: 'manual' }
     });
 
-    await checkFraudRules({ user, transaction: txn, type: 'withdraw' });
+    await runFraudCheck({ user, transaction: txn, type: 'withdraw' }); // ✅ Use correct function if renamed
 
     res.status(200).json({
       message: 'Withdrawal successful',
@@ -136,7 +136,7 @@ export const transfer = async (req, res) => {
       await session.commitTransaction();
       session.endSession();
 
-      await checkFraudRules({ user: sender, transaction: txn, type: 'transfer' });
+      await runFraudCheck({ user: sender, transaction: txn, type: 'transfer' });
 
       res.status(200).json({ message: 'Transfer successful' });
     } catch (innerErr) {
